@@ -63,6 +63,69 @@
     return self;
 }
 
+-(void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view withControl:(UIControl *)_controlView
+{
+    if (_controlView == nil)
+    {
+        return;
+    }
+    
+    // listen on device rotation
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onDeviceRotation:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    _lastInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    self.dividers = [[NSMutableArray alloc] init];
+    self.buttons = [[NSMutableArray alloc] initWithCapacity:1];
+    
+    [self.buttons addObject:_controlView];
+    
+    UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    buttonContainer.backgroundColor = [UIColor clearColor];
+    buttonContainer.clipsToBounds = YES;
+    
+    float totalWidth = [self reArrangeControls:self.buttons];
+    for (NSArray *btns in self.pageButtons) {
+        for (UIButton *b in btns) {
+            [buttonContainer addSubview:b];
+        }
+    }
+    buttonContainer.frame = CGRectMake(0, 0, totalWidth, kButtonHeight);
+    
+    [self presentPopoverFromRect:rect inView:view withContentView:buttonContainer];
+}
+
+- (float)reArrangeControls:(NSArray *)buttons {
+    self.pageButtons = [[NSMutableArray alloc] init];
+    _pageIndex = 0;
+
+    // if we need multiple pages to display all these buttons
+    float allButtonWidth = 0.f;
+    for (UIControl *b in buttons) {
+        allButtonWidth += b.frame.size.width;
+    }
+    allButtonWidth += ([buttons count] - 1); // dividers
+    
+    [self.dividers removeAllObjects];
+    float currentX = 0.f;
+    // need fixed buttons' frame if multiple page needed.
+    for (UIControl *b in buttons) {
+        b.enabled = YES;
+        b.frame = CGRectMake(currentX, 0, b.frame.size.width, b.frame.size.height);
+        currentX += b.frame.size.width;
+        
+        if (b != [buttons lastObject]) {
+            // add div between buttons
+            CGRect div = CGRectMake(currentX, 0, 1, kButtonHeight);
+            [self.dividers addObject:[NSValue valueWithCGRect:div]];
+            currentX += 1;
+        }
+    }
+    
+    [self.pageButtons addObject:buttons];
+    return currentX;
+}
+
 -(void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view withStrings:(NSArray *)stringArray {
     [self presentPopoverFromRect:rect inView:view withStrings:stringArray selectedIndex:-1];
 }
@@ -81,7 +144,7 @@
     buttonContainer.backgroundColor = [UIColor clearColor];
     buttonContainer.clipsToBounds = YES;
 
-    self.selectedIndex = selectedIndex;
+    self.selectedIndex = (int)selectedIndex;
 
     self.dividers = [[NSMutableArray alloc] init];
     self.buttons = [[NSMutableArray alloc] initWithCapacity:stringArray.count];
@@ -275,8 +338,6 @@
         
         [self.pageButtons addObject:buttons];
     }
-    
-    
     return currentX;
 }
 
@@ -339,6 +400,8 @@
     if (maxY + kPopOverViewHeight + 1 > CGRectGetMidY(topViewBounds)) {
         _isArrowUp = NO;
         _arrowPoint = CGPointMake(CGRectGetMidX(destRect), minY - 1);
+//        _isArrowUp = YES;
+//        _arrowPoint = CGPointMake(CGRectGetMidX(destRect), maxY + 1);
     } else {
         _isArrowUp = YES;
         _arrowPoint = CGPointMake(CGRectGetMidX(destRect), maxY + 1);
@@ -566,7 +629,6 @@
 #pragma mark - custom draw
 - (void)drawRect:(CGRect)rect {
     // Drawing code
-    
     // Build the popover path
     CGRect frame = _boxFrame;
     float xMin = CGRectGetMinX(frame);
