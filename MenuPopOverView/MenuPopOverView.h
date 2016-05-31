@@ -13,6 +13,7 @@
 @protocol MenuPopOverViewDelegate <NSObject>
 @optional
 - (void)popoverView:(MenuPopOverView *)popoverView didSelectItemAtIndex:(NSInteger)index;
+- (void)popoverView:(MenuPopOverView *)popoverView didSelectFontSize:(float)fontSize didSelectColor:(UIColor *)_selectColor isFont:(BOOL)_isFont;
 - (void)popoverViewDidDismiss:(MenuPopOverView *)popoverView;
 
 @end
@@ -29,6 +30,8 @@
 @property (nonatomic, copy) UIColor *popOverSelectedTextColor;
 
 @property (weak, nonatomic) id<MenuPopOverViewDelegate> delegate;
+
+-(void)presentControlPopoverFromRect:(CGRect)rect inView:(UIView *)view withIsFontSize:(BOOL)_isFontSize;
 
 -(void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view withControl:(UIControl *)_controlView;
 

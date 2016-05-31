@@ -47,16 +47,16 @@
 {
     CGPoint point = [tap locationInView:self.view];
     
-    CHYSlider *testControl = [[CHYSlider alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width - 40, 50)];
-    testControl.backgroundColor = [UIColor brownColor];
-    
-    testControl.minimumValue = 10;
-    testControl.maximumValue = 40;
-    testControl.value = 20;
+//    CHYSlider *testControl = [[CHYSlider alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width - 40, 50)];
+//    testControl.backgroundColor = [UIColor brownColor];
+//    
+//    testControl.minimumValue = 10;
+//    testControl.maximumValue = 40;
+//    testControl.value = 20;
     
     MenuPopOverView *popOver = [[MenuPopOverView alloc] init];
     popOver.delegate = self;
-    [popOver presentPopoverFromRect:CGRectMake(point.x, point.y, 0, 0) inView:self.view withControl:testControl];
+    [popOver presentControlPopoverFromRect:CGRectMake(point.x, point.y, 0, 0) inView:self.view withIsFontSize:NO];
 }
 
 - (void)tapped:(UITapGestureRecognizer *)tap

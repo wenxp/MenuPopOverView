@@ -24,12 +24,14 @@
 @synthesize continuous = _continuous;
 @synthesize labelOnThumb = _labelOnThumb;
 @synthesize decimalPlaces = _decimalPlaces;
+@synthesize isFontSize = _isFontSize;
 
 #pragma mark - UIView methods
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame withIsFontSize:(BOOL)_isSize
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _isFontSize = _isSize;
         [self commonInit];
     }
     return self;
@@ -39,6 +41,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
+        _isFontSize = YES;
         [self commonInit];
     }
     return self;    
@@ -68,7 +71,14 @@
     
     _labelOnThumb.center = CGPointMake([self xForValue:value], _labelOnThumb.center.y);
     
-    _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
+    if (_isFontSize)
+    {
+        _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
+    }
+    else
+    {
+       _labelOnThumb.backgroundColor = [self getColor];
+    }
     
     [self setNeedsDisplay];
 }
@@ -91,11 +101,20 @@
     
     // value labels
     _labelOnThumb = [[UILabel alloc] init];
-    _labelOnThumb.backgroundColor = [UIColor colorWithRed:227/255.0 green:134/255.0 blue:59/255.0 alpha:1.0];
     _labelOnThumb.layer.cornerRadius = 4.f;
-    _labelOnThumb.textAlignment = NSTextAlignmentCenter;
-    _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
-    _labelOnThumb.textColor = [UIColor whiteColor];
+    
+    if (_isFontSize)
+    {
+        _labelOnThumb.textAlignment = NSTextAlignmentCenter;
+        _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
+        _labelOnThumb.textColor = [UIColor whiteColor];
+        _labelOnThumb.backgroundColor = [UIColor colorWithRed:227/255.0 green:134/255.0 blue:59/255.0 alpha:1.0];
+    }
+    else
+    {
+        _labelOnThumb.backgroundColor = [self getColor];
+    }
+    
     [self addSubview:_labelOnThumb];
 }
 
@@ -146,8 +165,20 @@
     if (_thumbOn)
     {
         _value = [self valueForX:_labelOnThumb.center.x];
-        _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
-//        _labelOnThumb.backgroundColor = [self getColor];
+        if (_isFontSize)
+        {
+            _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
+        }
+        else
+        {
+            _labelOnThumb.backgroundColor = [self getColor];
+        }
+        
+        if (_sliderValueBlock)
+        {
+            _sliderValueBlock(_isFontSize, _value, _labelOnThumb.backgroundColor);
+        }
+        
         [self sendActionsForControlEvents:UIControlEventValueChanged];
     }
     _thumbOn = NO;
@@ -169,8 +200,14 @@
     if (_continuous)
     {
         _value = [self valueForX:_labelOnThumb.center.x];
-        _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
-//        _labelOnThumb.backgroundColor = [self getColor];
+        if (_isFontSize)
+        {
+            _labelOnThumb.text = [NSString stringWithFormat:[self valueStringFormat], _value];
+        }
+        else
+        {
+            _labelOnThumb.backgroundColor = [self getColor];
+        }
         [self sendActionsForControlEvents:UIControlEventValueChanged];
     }
     

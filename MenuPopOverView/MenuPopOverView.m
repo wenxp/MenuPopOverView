@@ -64,6 +64,30 @@
     return self;
 }
 
+-(void)presentControlPopoverFromRect:(CGRect)rect inView:(UIView *)view withIsFontSize:(BOOL)_isFontSize
+{
+    CHYSlider *sliderControl = [[CHYSlider alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width - 40, 50) withIsFontSize:_isFontSize];
+    sliderControl.backgroundColor = [UIColor brownColor];
+    
+    sliderControl.minimumValue = 10;
+    sliderControl.maximumValue = 40;
+    if (_isFontSize)
+    {
+        sliderControl.value = 16;
+    }
+    else
+    {
+        sliderControl.value = 10;
+    }
+    __weak typeof(self) wSelf = self;
+    sliderControl.sliderValueBlock = ^(BOOL isSize, float fontSize, UIColor *selectColor)
+    {
+        [wSelf selectSliderValue:fontSize withColor:selectColor withIsFont:isSize];
+    };
+    
+    [self presentPopoverFromRect:rect inView:view withControl:sliderControl];
+}
+
 -(void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view withControl:(UIControl *)_controlView
 {
     if (_controlView == nil)
@@ -494,6 +518,16 @@
         [self.delegate popoverView:self didSelectItemAtIndex:index];
     }
 
+    [self dismiss:YES];
+}
+
+-(void)selectSliderValue:(float)_fontSize withColor:(UIColor *)_selectColor withIsFont:(BOOL)_isFont
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(popoverView:didSelectFontSize:didSelectColor:isFont:)])
+    {
+        [self.delegate popoverView:self didSelectFontSize:_fontSize didSelectColor:_selectColor isFont:_isFont];
+    }
+    
     [self dismiss:YES];
 }
 
