@@ -10,5 +10,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.0'
   s.source       = { :git => "https://github.com/wenxp/MenuPopOverView.git", :tag => "0.0.4" }
   s.source_files = 'MenuPopOverView'
+  s.resources = "MenuPopOverView/*.png"
   s.requires_arc = true
 end

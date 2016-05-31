@@ -7,6 +7,7 @@
 //
 
 #import "MenuPopOverView.h"
+#import "CHYSlider.h"
 
 // Geometry metrics
 #define kPopOverViewPadding 20.f
